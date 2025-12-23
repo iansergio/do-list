@@ -1,16 +1,16 @@
-package com.backend.enums;
+package com.backend.domain.task;
 
 import lombok.Getter;
 
 @Getter
-public enum Status {
+public enum TaskStatus {
     PENDING("PENDING"),
     ONGOING("ONGOING"),
     FINISHED("FINISHED");
 
     private final String value;
 
-    Status(String value) {
+    TaskStatus(String value) {
         this.value = value;
     }
 }

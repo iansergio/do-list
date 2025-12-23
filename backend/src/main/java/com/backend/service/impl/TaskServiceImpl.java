@@ -1,10 +1,9 @@
 package com.backend.service.impl;
 
 import com.backend.dto.TaskRequest;
-import com.backend.dto.TaskResponse;
-import com.backend.entity.Task;
-import com.backend.enums.Priority;
-import com.backend.enums.Status;
+import com.backend.domain.task.Task;
+import com.backend.domain.task.TaskPriority;
+import com.backend.domain.task.TaskStatus;
 import com.backend.repository.TaskRepository;
 import com.backend.service.TaskService;
 import org.springframework.stereotype.Service;
@@ -19,18 +18,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse save(TaskRequest request) {
-        Task task = new Task(request);
+    public Task save(TaskRequest request) {
+        Task task = new Task(
+                request.title(),
+                request.description(),
+                request.priority(),
+                request.status(),
+                request.dueDate(),
+                request.
+        );
 
         if (request.priority() == null) {
-            task.setPriority(Priority.HIGH);
+            task.setPriority(TaskPriority.HIGH);
         }
 
         if (request.status() == null) {
-            task.setStatus(Status.PENDING);
+            task.setStatus(TaskStatus.PENDING);
         }
 
-        repository.save(task);
-        return new TaskResponse(task);
+        return repository.save(task);
     }
 }
