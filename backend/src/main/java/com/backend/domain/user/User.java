@@ -1,6 +1,5 @@
 package com.backend.domain.user;
 
-import com.backend.domain.enums.UserRole;
 import com.backend.domain.task.Task;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -33,4 +32,8 @@ public class User {
     // Um usuário tem várias tarefas
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
+
+    public User(UUID userId) {
+        this.id = userId;
+    }
 }

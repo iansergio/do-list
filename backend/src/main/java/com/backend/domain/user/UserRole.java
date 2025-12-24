@@ -1,11 +1,11 @@
-package com.backend.domain.enums;
+package com.backend.domain.user;
 
 import lombok.Getter;
 
 @Getter
 public enum UserRole {
     ADMIN(1),
-    USER(2);
+    USER(0);
 
     private final int value;
 
