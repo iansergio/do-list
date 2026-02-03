@@ -13,7 +13,7 @@ public interface TaskService {
     TaskResponse save(SaveTaskRequest request);
     List<TaskResponse> findAll();
     Optional<TaskResponse> findById(UUID id);
-    TaskResponse delete(UUID id);
+    void delete(UUID id);
     TaskResponse updateTaskInfos(UUID id, UpdateTaskInfosRequest request);
     TaskResponse updateStatus(UUID id, UpdateTaskStatusRequest request);
 }

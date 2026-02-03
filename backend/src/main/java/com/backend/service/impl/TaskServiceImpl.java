@@ -1,8 +1,8 @@
 package com.backend.service.impl;
 
-import com.backend.model.task.Task;
-import com.backend.model.task.TaskStatus;
-import com.backend.model.user.User;
+import com.backend.entity.task.Task;
+import com.backend.entity.task.TaskStatus;
+import com.backend.entity.user.User;
 import com.backend.dto.SaveTaskRequest;
 import com.backend.dto.TaskResponse;
 import com.backend.dto.UpdateTaskInfosRequest;
@@ -73,13 +73,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse delete(UUID id) {
+    public void delete(UUID id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
 
         taskRepository.delete(task);
-
-        return TaskResponse.from(task);
     }
 
     @Override

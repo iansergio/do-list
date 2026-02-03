@@ -1,6 +1,7 @@
-package com.backend.model.user;
+package com.backend.entity.user;
 
-import com.backend.model.task.Task;
+import com.backend.core.BaseEntity;
+import com.backend.entity.task.Task;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

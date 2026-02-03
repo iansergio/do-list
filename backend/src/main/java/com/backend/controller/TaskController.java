@@ -31,7 +31,8 @@ public class TaskController {
     @PostMapping
     @Operation(summary = "Criar task")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Criado com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Task não encontrada"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody SaveTaskRequest request) {
@@ -53,8 +54,9 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<TaskResponse> deleteTask(@PathVariable UUID id) {
-        return ResponseEntity.ok(service.delete(id));
+    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/infos")

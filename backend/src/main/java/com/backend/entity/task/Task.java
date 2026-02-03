@@ -1,6 +1,7 @@
-package com.backend.model.task;
+package com.backend.entity.task;
 
-import com.backend.model.user.User;
+import com.backend.core.BaseEntity;
+import com.backend.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "tasks")
-public class Task {
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,8 +1,7 @@
 package com.backend.dto;
 
-import com.backend.model.task.TaskPriority;
-import com.backend.model.task.TaskStatus;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.backend.entity.task.TaskPriority;
+import com.backend.entity.task.TaskStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -22,7 +21,6 @@ public class SaveTaskRequest {
     private TaskStatus status; // PENDING, FINISHED
 
     @NotNull(message = "Date cannot be null")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     LocalDateTime dueDate;
 
     @NotNull(message = "User id cannot be null")
