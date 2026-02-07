@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     @Operation(summary = "Find user by email")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
@@ -71,7 +71,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/password")
     @Operation(summary = "Update user password")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Password updated successfully"),
