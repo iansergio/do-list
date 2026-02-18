@@ -7,4 +7,5 @@ import com.backend.dto.auth.RegisterRequest;
 public interface AuthService {
     AuthResponse register(RegisterRequest request);
     AuthResponse login(LoginRequest request);
+    AuthResponse refresh(String token);
 }

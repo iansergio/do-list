@@ -3,11 +3,13 @@ package com.backend.service.impl;
 import com.backend.dto.auth.AuthResponse;
 import com.backend.dto.auth.LoginRequest;
 import com.backend.dto.auth.RegisterRequest;
+import com.backend.entity.token.RefreshToken;
 import com.backend.entity.user.Role;
 import com.backend.entity.user.User;
 import com.backend.repository.UserRepository;
 import com.backend.service.AuthService;
 import com.backend.service.JwtService;
+import com.backend.service.RefreshTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +21,18 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
@@ -38,16 +47,19 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
+        user.setEmailVerified(false);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
 
         // Gera token
-        String token = jwtService.generateToken(user.getEmail());
+        String accessToken = jwtService.generateToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
         return new AuthResponse(
-                token,
+                accessToken,
+                refreshToken.getToken(),
                 user.getEmail(),
                 user.getName(),
                 "User registered"
@@ -67,11 +79,35 @@ public class AuthServiceImpl implements AuthService {
 
         // Gera token
         String token = jwtService.generateToken(user.getEmail());
+        RefreshToken refreshToken  = refreshTokenService.createRefreshToken(user.getId());
 
         return new AuthResponse(
                 token,
+                refreshToken.getToken(),
                 user.getEmail(),
                 user.getName(),
                 "Logged in successfully");
+    }
+
+    @Override
+    public AuthResponse refresh(String tokenStr) {
+        RefreshToken token = refreshTokenService
+                .findByToken(tokenStr)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+        refreshTokenService.verifyExpiration(token);
+
+        User user = userRepository.findById(token.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String newAccessToken = jwtService.generateToken(user.getEmail());
+
+        return new AuthResponse(
+                newAccessToken,
+                token.getToken(),
+                user.getEmail(),
+                user.getName(),
+                "Token refreshed successfully"
+        );
     }
 }

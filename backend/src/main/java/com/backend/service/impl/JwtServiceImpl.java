@@ -4,9 +4,11 @@ import com.backend.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +17,11 @@ import java.util.Map;
 public class JwtServiceImpl implements JwtService {
 
     // Variável de ambiente com a chave secreta
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
-    private static final long EXPIRATION_TIME = 86400000; // 24hrs
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    @Value("${jwt.access.expiration}")
+    private long accessTokenExpirationTime;
 
     @Override
     public String generateToken(String email) {
@@ -30,16 +35,14 @@ public class JwtServiceImpl implements JwtService {
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime))
                 .signWith(getSignKey())
                 .compact();
     }
 
     @Override
     public SecretKey getSignKey() {
-        // Faz o decode do HEX da string para bytes
-        byte[] keyBytes = SECRET_KEY.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
@@ -54,7 +57,6 @@ public class JwtServiceImpl implements JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
     }
 
     @Override

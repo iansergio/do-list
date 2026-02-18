@@ -27,7 +27,13 @@ public class User extends BaseEntity {
     private String email;
 
     private String password;
+    private boolean emailVerified;
+    private String verificationToken;
+    private LocalDateTime verificationTokenExpiresAt;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -2,6 +2,7 @@ package com.backend.controller;
 
 import com.backend.dto.auth.AuthResponse;
 import com.backend.dto.auth.LoginRequest;
+import com.backend.dto.auth.RefreshTokenRequest;
 import com.backend.dto.auth.RegisterRequest;
 import com.backend.service.AuthService;
 import jakarta.validation.Valid;
@@ -40,6 +41,17 @@ public class AuthController {
         try {
             AuthResponse response = service.login(request);
             return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        try {
+            AuthResponse response = service.refresh(request.getRefreshToken());
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));

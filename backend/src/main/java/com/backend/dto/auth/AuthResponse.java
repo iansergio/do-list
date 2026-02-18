@@ -6,13 +6,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AuthResponse {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String email;
     private String name;
     private String message;
 
-    public AuthResponse(String token, String email, String name, String message) {
-        this.token = token;
+    public AuthResponse(String accessToken, String refreshToken, String email, String name, String message) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.email = email;
         this.name = name;
         this.message = message;
