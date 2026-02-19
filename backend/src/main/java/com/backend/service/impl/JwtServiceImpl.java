@@ -42,6 +42,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public String getRoleFromToken(String token) {
+        return getClaimsFromToken(token).get("role", String.class);
+    }
+
+    @Override
     public Claims getClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())

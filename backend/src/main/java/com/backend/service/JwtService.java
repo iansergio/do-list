@@ -8,6 +8,7 @@ public interface JwtService {
     String generateToken(String email);
     SecretKey getSignKey();
     String getEmailFromToken(String token);
+    String getRoleFromToken(String token);
     Claims getClaimsFromToken(String token);
     boolean validateToken(String token);
     boolean isTokenExpired(String token);
