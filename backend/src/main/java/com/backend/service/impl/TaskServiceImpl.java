@@ -11,6 +11,8 @@ import com.backend.exception.TaskNotFoundException;
 import com.backend.repository.TaskRepository;
 import com.backend.repository.UserRepository;
 import com.backend.service.TaskService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +33,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse save(CreateTaskRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new NoSuchElementException("User associated with task not found"));
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (request.getStatus() == null) {
             request.setStatus(Status.PENDING);

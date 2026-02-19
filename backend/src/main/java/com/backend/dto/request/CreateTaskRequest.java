@@ -28,6 +28,4 @@ public class CreateTaskRequest {
         @NotNull(message = "Due date is required")
         private LocalDateTime dueDate;
 
-        @NotNull(message = "User ID is required")
-        private UUID userId;
 }
