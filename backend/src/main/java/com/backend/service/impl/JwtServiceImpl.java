@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -21,28 +19,21 @@ public class JwtServiceImpl implements JwtService {
     private String secretKey;
 
     @Value("${jwt.access.expiration}")
-    private long accessTokenExpirationTime;
-
-    @Override
-    public String generateToken(String email) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email);
-    }
-
-    @Override
-    public String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime))
-                .signWith(getSignKey())
-                .compact();
-    }
+    private long expirationTime;
 
     @Override
     public SecretKey getSignKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public String generateToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSignKey())
+                .compact();
     }
 
     @Override
@@ -62,10 +53,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(getSignKey())
-                    .build()
-                    .parseSignedClaims(token);
+            getClaimsFromToken(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -74,8 +62,10 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isTokenExpired(String token) {
-        return getClaimsFromToken(token)
-                .getExpiration()
-                .before(new Date());
+        try {
+            return getClaimsFromToken(token).getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
