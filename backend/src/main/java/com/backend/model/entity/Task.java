@@ -32,12 +32,7 @@ public class Task extends BaseEntity {
     private Status status;
 
     private LocalDateTime dueDate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    /**
-     * Várias tarefas pertencem a um único usuário
-     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -46,15 +41,12 @@ public class Task extends BaseEntity {
     public Task() {
     }
 
-    public Task(String title, String description, Priority priority,
-                Status status, LocalDateTime dueDate, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Task(String title, String description, Priority priority, Status status, LocalDateTime dueDate, User user) {
         this.title = title;
         this.description = description;
         this.priority = priority;
         this.status = status;
         this.dueDate = dueDate;
         this.user = user;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

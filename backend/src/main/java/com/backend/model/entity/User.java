@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,24 +30,16 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    /**
-     * Um usuário tem várias tarefas
-     */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     public User() {
     }
 
-    public User(String email, String password, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public User(String email, String password, Role role) {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
 }

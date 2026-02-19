@@ -13,26 +13,24 @@ import com.backend.service.RefreshTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
+            RefreshTokenService refreshTokenService,
             JwtService jwtService,
-            RefreshTokenService refreshTokenService
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,8 +45,6 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
 
@@ -108,5 +104,15 @@ public class AuthServiceImpl implements AuthService {
                 user.getName(),
                 "Token refreshed successfully"
         );
+    }
+
+    @Override
+    public void logout(String refreshTokenStr) {
+
+        RefreshToken token = refreshTokenService
+                .findByToken(refreshTokenStr)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+
+        refreshTokenService.delete(token);
     }
 }

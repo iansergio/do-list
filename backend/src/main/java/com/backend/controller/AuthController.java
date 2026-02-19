@@ -1,5 +1,6 @@
 package com.backend.controller;
 
+import com.backend.dto.request.LogoutRequest;
 import com.backend.dto.response.AuthResponse;
 import com.backend.dto.request.LoginRequest;
 import com.backend.dto.request.RefreshTokenRequest;
@@ -19,16 +20,16 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService service;
+    private final AuthService authService;
 
-    public AuthController(AuthService service) {
-        this.service = service;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
-            AuthResponse response = service.register(request);
+            AuthResponse response = authService.register(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException  e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -39,7 +40,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            AuthResponse response = service.login(request);
+            AuthResponse response = authService.login(request);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -50,8 +51,19 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            AuthResponse response = service.refresh(request.getRefreshToken());
+            AuthResponse response = authService.refresh(request.getRefreshToken());
             return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Valid @RequestBody LogoutRequest request) {
+        try {
+            authService.logout(request.getRefreshToken());
+            return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));

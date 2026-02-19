@@ -13,7 +13,6 @@ import com.backend.repository.UserRepository;
 import com.backend.service.TaskService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -45,9 +44,7 @@ public class TaskServiceImpl implements TaskService {
                 request.getPriority(),
                 request.getStatus(),
                 request.getDueDate(),
-                user,
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                user
         );
 
         Task savedTask = taskRepository.save(task);
@@ -105,8 +102,6 @@ public class TaskServiceImpl implements TaskService {
             task.setDueDate(request.getDueDate());
         }
 
-        task.setUpdatedAt(LocalDateTime.now());
-
         Task updated = taskRepository.save(task);
         return TaskResponse.from(updated);
     }
@@ -117,7 +112,6 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
         task.setStatus(request.getStatus());
-        task.setUpdatedAt(LocalDateTime.now());
 
         Task updated = taskRepository.save(task);
         return TaskResponse.from(updated);

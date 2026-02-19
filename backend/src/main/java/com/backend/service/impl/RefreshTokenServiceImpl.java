@@ -1,6 +1,8 @@
 package com.backend.service.impl;
 
+import com.backend.exception.TaskNotFoundException;
 import com.backend.model.entity.RefreshToken;
+import com.backend.model.entity.Task;
 import com.backend.repository.RefreshTokenRepository;
 import com.backend.service.RefreshTokenService;
 import jakarta.transaction.Transactional;
@@ -17,38 +19,42 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Value("${jwt.refresh.expiration}")
     private int refreshTokenExpirationTime;
 
-    private final RefreshTokenRepository repository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository repository) {
-        this.repository = repository;
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
     @Transactional
     public RefreshToken createRefreshToken(UUID userId) {
-        repository.deleteByUserId(userId);
+        refreshTokenRepository.deleteByUserId(userId);
 
         RefreshToken token = new RefreshToken();
         token.setUserId(userId);
         token.setToken(UUID.randomUUID().toString());
         token.setExpiresAt(LocalDateTime.now().plusDays(refreshTokenExpirationTime));
-        token.setCreatedAt(LocalDateTime.now());
 
-        return repository.save(token);
+        return refreshTokenRepository.save(token);
     }
 
     @Override
     @Transactional
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public void verifyExpiration(RefreshToken token) {
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-            repository.deleteByToken(token.getToken());
+            refreshTokenRepository.deleteByToken(token.getToken());
             throw new RuntimeException("Refresh token expired. Log in again to get a new one.");
         }
-        return token;
     }
 
     @Override
     public Optional<RefreshToken> findByToken(String token) {
-        return repository.findByToken(token);
+        return refreshTokenRepository.findByToken(token);
+    }
+
+    @Override
+    @Transactional
+    public void delete(RefreshToken token) {
+        refreshTokenRepository.delete(token);
     }
 }

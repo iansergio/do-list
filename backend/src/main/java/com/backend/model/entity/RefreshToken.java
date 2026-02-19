@@ -16,10 +16,10 @@ public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     private String token;
     private UUID userId;
     private LocalDateTime expiresAt;
-    private LocalDateTime createdAt;
 
     public RefreshToken() {
     }
