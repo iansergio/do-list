@@ -20,12 +20,12 @@ public class AdminSeed {
 
     @PostConstruct
     public void createAdmin() {
-        if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
+        if (userRepository.findByEmail("admin@admin.com").isEmpty()) {
 
             User admin = new User();
             admin.setName("Administrator");
-            admin.setEmail("admin@gmail.com");
-            admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setEmail("admin@admin.com");
+            admin.setPassword(passwordEncoder.encode("adminadmin"));
             admin.setRole(Role.ADMIN);
 
             userRepository.save(admin);
