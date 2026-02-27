@@ -40,8 +40,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // Só autentica se ainda não houver autenticação no contexto
         if (jwtService.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String email = jwtService.getEmailFromToken(token);
-            String role = jwtService.getRoleFromToken(token);
+            String email = jwtService.findEmailFromToken(token);
+            String role = jwtService.findRoleFromToken(token);
 
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
 

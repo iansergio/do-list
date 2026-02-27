@@ -25,7 +25,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody CreateTaskRequest request) {
+    public ResponseEntity<TaskResponse> create(@Valid @RequestBody CreateTaskRequest request) {
         TaskResponse savedTask = service.save(request);
         URI location = URI.create("/api/tasks/" + savedTask.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -34,13 +34,13 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+    public ResponseEntity<List<TaskResponse>> getAll() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse> getTaskById(@PathVariable UUID id) {
+    public ResponseEntity<TaskResponse> getById(@PathVariable UUID id) {
         return service.findById(id)
                 .map(entity -> ResponseEntity.status(HttpStatus.OK).body(entity))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -53,21 +53,21 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/infos")
-    public ResponseEntity<TaskResponse> updateTaskInfos(
+    public ResponseEntity<TaskResponse> update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTaskRequest request
     ) {
-        TaskResponse updated = service.updateTaskInfos(id, request);
+        TaskResponse updated = service.updateInfo(id, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updated);
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<TaskResponse> updateTaskStatus(
+    public ResponseEntity<TaskResponse> patchStatus(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateTaskStatusRequest request
     ) {
-        TaskResponse updated = service.updateStatus(id, request);
+        TaskResponse updated = service.changeStatus(id, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(updated);
     }

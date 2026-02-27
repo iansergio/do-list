@@ -14,6 +14,6 @@ public interface TaskService {
     List<TaskResponse> findAll();
     Optional<TaskResponse> findById(UUID id);
     void delete(UUID id);
-    TaskResponse updateTaskInfos(UUID id, UpdateTaskRequest request);
-    TaskResponse updateStatus(UUID id, UpdateTaskStatusRequest request);
+    TaskResponse updateInfo(UUID id, UpdateTaskRequest request);
+    TaskResponse changeStatus(UUID id, UpdateTaskStatusRequest request);
 }

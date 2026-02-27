@@ -22,7 +22,7 @@ public class JwtServiceImpl implements JwtService {
     private long expirationTime;
 
     @Override
-    public SecretKey getSignKey() {
+    public SecretKey findSignKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -32,24 +32,24 @@ public class JwtServiceImpl implements JwtService {
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSignKey())
+                .signWith(findSignKey())
                 .compact();
     }
 
     @Override
-    public String getEmailFromToken(String token) {
-        return getClaimsFromToken(token).getSubject();
+    public String findEmailFromToken(String token) {
+        return findClaimsFromToken(token).getSubject();
     }
 
     @Override
-    public String getRoleFromToken(String token) {
-        return getClaimsFromToken(token).get("role", String.class);
+    public String findRoleFromToken(String token) {
+        return findClaimsFromToken(token).get("role", String.class);
     }
 
     @Override
-    public Claims getClaimsFromToken(String token) {
+    public Claims findClaimsFromToken(String token) {
         return Jwts.parser()
-                .verifyWith(getSignKey())
+                .verifyWith(findSignKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -58,19 +58,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean validateToken(String token) {
         try {
-            getClaimsFromToken(token);
+            findClaimsFromToken(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    @Override
-    public boolean isTokenExpired(String token) {
-        try {
-            return getClaimsFromToken(token).getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }

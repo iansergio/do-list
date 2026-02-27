@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody RegisterRequest request) {
         UserResponse savedUser = service.save(request);
         URI location = URI.create("/api/users/" + savedUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -36,14 +36,14 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAll() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.findAll());
     }
 
     @GetMapping("/email/{email}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<FindUserByEmailResponse> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<FindUserByEmailResponse> getByEmail(@PathVariable String email) {
         return service.findByEmail(email)
                 .map(user -> ResponseEntity.status(HttpStatus.OK).body(user))
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -51,17 +51,17 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}/password")
-    public ResponseEntity<UserResponse> updateUserPassword(
+    public ResponseEntity<UserResponse> patchPassword(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserPasswordRequest request
     ) {
-        UserResponse updated = service.updateUserPassword(id, request);
+        UserResponse updated = service.updatePassword(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }

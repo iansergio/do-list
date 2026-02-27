@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUserPassword(UUID id, UpdateUserPasswordRequest request) {
+    public UserResponse updatePassword(UUID id, UpdateUserPasswordRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 

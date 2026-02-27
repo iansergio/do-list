@@ -48,22 +48,22 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@Valid @RequestBody LogoutRequest request) {
         try {
-            AuthResponse response = authService.refresh(request.getRefreshToken());
-            return ResponseEntity.ok(response);
+            authService.logout(request.getRefreshToken());
+            return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(@Valid @RequestBody LogoutRequest request) {
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            authService.logout(request.getRefreshToken());
-            return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+            AuthResponse response = authService.refresh(request.getRefreshToken());
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", e.getMessage()));
