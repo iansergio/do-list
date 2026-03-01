@@ -62,9 +62,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updatePassword(UUID id, UpdateUserPasswordRequest request) {
+    public UserResponse updatePassword(UUID id, UpdateUserPasswordRequest request, String currentUserEmail) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+
+        // Only allow users to update their own password
+        if (!user.getEmail().equals(currentUserEmail)) {
+            throw new UserNotFoundException(id);
+        }
 
         user.setPassword(passwordEncoder.encode(request.password()));
 

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -59,10 +60,11 @@ public class UserController {
 
     @PatchMapping("/{id}/password")
     public ResponseEntity<UserResponse> patchPassword(
+            @AuthenticationPrincipal String userEmail,
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserPasswordRequest request
     ) {
-        UserResponse updated = service.updatePassword(id, request);
+        UserResponse updated = service.updatePassword(id, request, userEmail);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 }
