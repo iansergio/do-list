@@ -1,19 +1,15 @@
 package com.backend.dto.response;
 
 import com.backend.model.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.util.UUID;
 
-@AllArgsConstructor
-@Getter
-public class UserResponse {
-    private UUID id;
-    private String email;
-    private String role;
-
-    public static UserResponse from(User user) {
+public record UserResponse (
+        UUID id,
+        String email,
+        String role
+) {
+    public static UserResponse fromEntity(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getEmail(),

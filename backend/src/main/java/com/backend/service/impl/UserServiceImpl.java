@@ -9,6 +9,7 @@ import com.backend.model.entity.User;
 import com.backend.exception.UserNotFoundException;
 import com.backend.repository.UserRepository;
 import com.backend.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,35 +20,37 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserResponse save(RegisterRequest request) {
         User user = new User(
-                request.getEmail(),
-                request.getPassword(),
+                request.email(),
+                passwordEncoder.encode(request.password()),
                 Role.USER
         );
 
         User savedUser = userRepository.save(user);
-        return UserResponse.from(savedUser);
+        return UserResponse.fromEntity(savedUser);
     }
 
     @Override
     public List<UserResponse> findAll() {
         return userRepository.findAll()
                 .stream()
-                .map(UserResponse::from)
+                .map(UserResponse::fromEntity)
                 .toList();
     }
 
     @Override
     public Optional<FindUserByEmailResponse> findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(FindUserByEmailResponse::from);
+                .map(FindUserByEmailResponse::fromEntity);
     }
 
     @Override
@@ -63,9 +66,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         User updated = userRepository.save(user);
-        return UserResponse.from(updated);
+        return UserResponse.fromEntity(updated);
     }
 }

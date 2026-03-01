@@ -1,8 +1,6 @@
 package com.backend.service.impl;
 
-import com.backend.exception.TaskNotFoundException;
 import com.backend.model.entity.RefreshToken;
-import com.backend.model.entity.Task;
 import com.backend.repository.RefreshTokenRepository;
 import com.backend.service.RefreshTokenService;
 import jakarta.transaction.Transactional;

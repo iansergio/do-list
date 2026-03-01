@@ -28,7 +28,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse> create(@Valid @RequestBody RegisterRequest request) {
         UserResponse savedUser = service.save(request);
-        URI location = URI.create("/api/users/" + savedUser.getId());
+        URI location = URI.create("/api/users/" + savedUser.id());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .location(location)
                 .body(savedUser);

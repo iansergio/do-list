@@ -1,6 +1,5 @@
 package com.backend.controller;
 
-import com.backend.dto.request.LogoutRequest;
 import com.backend.dto.response.AuthResponse;
 import com.backend.dto.request.LoginRequest;
 import com.backend.dto.request.RefreshTokenRequest;
@@ -49,9 +48,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@Valid @RequestBody LogoutRequest request) {
+    public ResponseEntity<?> logout(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            authService.logout(request.getRefreshToken());
+            authService.logout(request.refreshToken());
             return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -62,7 +61,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            AuthResponse response = authService.refresh(request.getRefreshToken());
+            AuthResponse response = authService.refresh(request.refreshToken());
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

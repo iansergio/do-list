@@ -3,7 +3,7 @@ package com.backend.model.entity;
 import com.backend.model.core.BaseEntity;
 import com.backend.model.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,9 +22,10 @@ public class User extends BaseEntity {
 
     private String name;
 
-    @Email
+    @NotBlank(message = "Email is required")
     private String email;
 
+    @NotBlank(message = "Password is required")
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -41,5 +42,4 @@ public class User extends BaseEntity {
         this.password = password;
         this.role = role;
     }
-
 }

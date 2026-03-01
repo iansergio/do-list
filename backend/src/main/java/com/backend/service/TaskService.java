@@ -10,10 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TaskService {
-    TaskResponse save(CreateTaskRequest request);
+    TaskResponse save(CreateTaskRequest request, String userEmail);
     List<TaskResponse> findAll();
+    List<TaskResponse> findAllByUser(String userEmail);
     Optional<TaskResponse> findById(UUID id);
-    void delete(UUID id);
-    TaskResponse updateInfo(UUID id, UpdateTaskRequest request);
-    TaskResponse changeStatus(UUID id, UpdateTaskStatusRequest request);
+    Optional<TaskResponse> findByIdAndUser(UUID id, String userEmail);
+    void delete(UUID id, String userEmail);
+    TaskResponse updateInfo(UUID id, UpdateTaskRequest request, String userEmail);
+    TaskResponse changeStatus(UUID id, UpdateTaskStatusRequest request, String userEmail);
 }

@@ -35,21 +35,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email already registered");
         }
 
         // Cria novo usuário
         User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setName(request.name());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(Role.USER);
 
         userRepository.save(user);
 
         // Gera token
-        String accessToken = jwtService.generateToken(user.getEmail());
+        String accessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
         return new AuthResponse(
@@ -64,16 +64,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
         // Busca usuário
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
         // Verifica senha
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
         // Gera token
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
         RefreshToken refreshToken  = refreshTokenService.createRefreshToken(user.getId());
 
         return new AuthResponse(
@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(token.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String newAccessToken = jwtService.generateToken(user.getEmail());
+        String newAccessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
         return new AuthResponse(
                 newAccessToken,

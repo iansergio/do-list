@@ -5,7 +5,7 @@ import io.jsonwebtoken.Claims;
 import javax.crypto.SecretKey;
 
 public interface JwtService {
-    String generateToken(String email);
+    String generateToken(String email, String role);
     SecretKey findSignKey();
     String findEmailFromToken(String token);
     String findRoleFromToken(String token);
