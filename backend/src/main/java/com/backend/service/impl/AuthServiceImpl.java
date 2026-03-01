@@ -12,6 +12,7 @@ import com.backend.service.JwtService;
 import com.backend.service.RefreshTokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -34,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email already registered");
@@ -62,6 +64,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         // Busca usuário
         User user = userRepository.findByEmail(request.email())
@@ -85,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse refresh(String tokenStr) {
         RefreshToken token = refreshTokenService
                 .findByToken(tokenStr)
@@ -95,11 +99,15 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(token.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        // Rotate refresh token: delete old one and create new one
+        refreshTokenService.delete(token);
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+
         String newAccessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
         return new AuthResponse(
                 newAccessToken,
-                token.getToken(),
+                newRefreshToken.getToken(),
                 user.getEmail(),
                 user.getName(),
                 "Token refreshed successfully"
@@ -107,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void logout(String refreshTokenStr) {
 
         RefreshToken token = refreshTokenService

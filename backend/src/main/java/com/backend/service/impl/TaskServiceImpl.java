@@ -12,6 +12,7 @@ import com.backend.repository.UserRepository;
 import com.backend.service.TaskService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse save(CreateTaskRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -49,6 +51,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> findAll() {
         return taskRepository.findAll()
                 .stream()
@@ -57,6 +60,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> findAllByUser(String userEmail) {
         return taskRepository.findAllByUserEmail(userEmail)
                 .stream()
@@ -65,21 +69,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<TaskResponse> findById(UUID id) {
         return taskRepository.findById(id)
                 .map(TaskResponse::fromEntity);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<TaskResponse> findByIdAndUser(UUID id, String userEmail) {
-        return taskRepository.findById(id)
+        return taskRepository.findByIdWithUser(id)
                 .filter(task -> task.getUser().getEmail().equals(userEmail))
                 .map(TaskResponse::fromEntity);
     }
 
     @Override
+    @Transactional
     public void delete(UUID id, String userEmail) {
-        Task task = taskRepository.findById(id)
+        Task task = taskRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
         if (!task.getUser().getEmail().equals(userEmail)) {
@@ -90,8 +97,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse updateInfo(UUID id, UpdateTaskRequest request, String userEmail) {
-        Task task = taskRepository.findById(id)
+        Task task = taskRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
         if (!task.getUser().getEmail().equals(userEmail)) {
@@ -119,8 +127,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public TaskResponse changeStatus(UUID id, UpdateTaskStatusRequest request, String userEmail) {
-        Task task = taskRepository.findById(id)
+        Task task = taskRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
 
         if (!task.getUser().getEmail().equals(userEmail)) {

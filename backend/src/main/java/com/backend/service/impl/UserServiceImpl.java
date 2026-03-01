@@ -11,6 +11,7 @@ import com.backend.repository.UserRepository;
 import com.backend.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse save(RegisterRequest request) {
         User user = new User(
                 request.email(),
@@ -40,6 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> findAll() {
         return userRepository.findAll()
                 .stream()
@@ -48,12 +51,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<FindUserByEmailResponse> findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .map(FindUserByEmailResponse::fromEntity);
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -62,6 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse updatePassword(UUID id, UpdateUserPasswordRequest request, String currentUserEmail) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
