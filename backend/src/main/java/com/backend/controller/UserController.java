@@ -26,6 +26,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody RegisterRequest request) {
         UserResponse savedUser = service.save(request);
         URI location = URI.create("/api/users/" + savedUser.id());

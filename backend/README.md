@@ -184,11 +184,13 @@ All task endpoints require a valid `Authorization: Bearer <token>` header.
 
 | Method | Path | Description | Role required |
 |---|---|---|---|
-| `POST` | `/api/users` | Create user | Public |
+| `POST` | `/api/users` | Create user (admin/internal use) | `ADMIN` |
 | `GET` | `/api/users` | List all users | `ADMIN` |
 | `GET` | `/api/users/email/{email}` | Find user by email | `ADMIN` |
 | `DELETE` | `/api/users/{id}` | Delete user | `ADMIN` |
 | `PATCH` | `/api/users/{id}/password` | Update password | Authenticated |
+
+> **Note:** For user self-registration, use `POST /api/auth/register` which returns tokens. `POST /api/users` is intended for admin or internal user creation.
 
 ---
 
@@ -247,6 +249,18 @@ Password: (empty)
 
 ---
 
+## Testing
+
+Run all tests:
+
+```bash
+./mvnw test
+```
+
+Test reports are generated in `target/surefire-reports/`.
+
+---
+
 ## Docker
 
 `docker-compose.yml` starts a PostgreSQL 18 container:
@@ -261,6 +275,11 @@ services:
       POSTGRES_DB: db
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
 ```
 
 ```bash
